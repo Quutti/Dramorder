@@ -4,6 +4,7 @@ import * as cookieParser from "cookie-parser";
 import * as path from "path";
 import { sendStatusJsonMiddleware } from "send-status-json";
 
+import * as helpers from "./helpers";
 import { registerApi } from "./api/register-api";
 import { Response } from "./types";
 
@@ -53,9 +54,7 @@ export class WebServer {
 
         // Handle 500 errors
         this._app.use((err, req, res, next) => {
-            console.log(`[500] Internal server error`);
-            console.error(err);
-            return res.sendStatusJson(500);
+            helpers.handleError(err, res);
         });
     }
 
