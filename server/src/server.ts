@@ -46,6 +46,8 @@ export class WebServer {
             res.sendFile(INDEX);
         });
 
+        registerApi(this._app);
+
         // Handler 404 not found
         this._app.use((req, res: Response) => {
             console.log(`[404] ${req.method} ${req.path}`);
