@@ -16,6 +16,7 @@
     "dotenv": "^4.0.0",
     "easy-mysql-with-promise": "^1.0.0",
     "express": "^4.16.2",
+    "jsonwebtoken": "^8.1.0",
     "send-status-json": "^1.0.4"
   },
   "devDependencies": {
@@ -23,6 +24,7 @@
     "@types/cookie-parser": "^1.4.1",
     "@types/dotenv": "^4.0.2",
     "@types/express": "^4.0.39",
+    "@types/jsonwebtoken": "^7.2.3",
     "@types/node": "^8.0.47",
     "nodemon": "^1.12.1",
     "ts-node": "^3.3.0",
