@@ -14,7 +14,23 @@ export interface Order {
     createdAt: string;
     currencyMultiplier: number;
     closedAt?: string;
+    lists?: OrderList[];
     status: string;
+}
+
+export interface OrderList {
+    id?: number;
+    orderId?: number;
+    name: string;
+    items?: OrderItem[];
+}
+
+export interface OrderItem {
+    id?: number;
+    listId?: number;
+    name: string;
+    price: number;
+    href: string;
 }
 
 export const orderAuth: RequestHandler = (req, res: Response) => {
@@ -127,6 +143,55 @@ const sanitazeOrder = (order: Order): Partial<Order> => {
 
 const getOrder = (orderId: number): Promise<Order> => {
     return DB.query(`SELECT * FROM orders WHERE id = ?`, [orderId])
-        .then(result => result[0] || null)
+        .then(result => {
+            const order: Order = result[0] || null;
+            if (!order) {
+                return order;
+            }
+
+            return getOrderLists(order.id)
+                .then(lists => {
+                    order.lists = lists;
+                    return order;
+                })
+                .catch(err => Promise.reject(err));
+        })
         .catch(err => Promise.reject(err));
+}
+
+const getOrderLists = (orderId: number): Promise<OrderList[]> => {
+    const listsSql = `SELECT * FROM lists WHERE orderId = ?`;
+    const itemsSql = `
+        SELECT *
+        FROM items
+        WHERE listId IN (
+            SELECT id
+            FROM lists
+            WHERE orderId = ?
+        )
+    `;
+
+    return Promise.all([DB.query(listsSql, [orderId]), DB.query(itemsSql, [orderId])])
+        .then(res => {
+            const lists: OrderList[] = res[0];
+            const items: OrderItem[] = res[1];
+            const listIdMap: number[] = [];
+
+            lists.forEach((list) => {
+                delete list.orderId;
+                list.items = [];
+                listIdMap.push(list.id);
+            });
+
+            items.forEach((item) => {
+                const index = listIdMap.indexOf(item.listId);
+                if (index > -1) {
+                    lists[index].items.push(item);
+                    delete item.listId;
+                }
+            });
+
+            return lists;
+        });
+
 }
