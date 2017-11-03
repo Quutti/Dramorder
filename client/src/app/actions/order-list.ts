@@ -12,7 +12,7 @@ export const fetchOrderList = () => {
 }
 
 const fetchingOrderList = () => {
-    return { type: ORDER_LIST_RECEIVED }
+    return { type: ORDER_LIST_FETCHING }
 }
 
 const receivedOrderList = (orders: PrunedOrder[]) => {

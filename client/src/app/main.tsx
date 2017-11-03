@@ -2,8 +2,10 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as redux from "redux";
 import { Provider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
 import thunkMiddleware from "redux-thunk";
 
+import { Routes } from "./routes";
 import combinedReducers from "./reducers/_combined";
 import { fetchOrderList } from "./actions/order-list";
 
@@ -14,6 +16,8 @@ store.dispatch(fetchOrderList());
 
 ReactDOM.render((
     <Provider store={store}>
-        <div>Test</div>
+        <BrowserRouter>
+            <Routes />
+        </BrowserRouter>
     </Provider>
 ), document.getElementById("app"))
