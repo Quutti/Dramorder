@@ -1,4 +1,4 @@
-import { Express } from "express";
+import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as cookieParser from "cookie-parser";
 import * as path from "path";
@@ -10,10 +10,10 @@ import { Response } from "./types";
 
 export class WebServer {
 
-    private _app: Express;
+    private _app: express.Express;
     private _port: number;
 
-    constructor(app: Express, port: number) {
+    constructor(app: express.Express, port: number) {
         this._app = app;
         this._port = port;
     }
@@ -31,6 +31,10 @@ export class WebServer {
             ? path.join(__dirname, '..', '..', 'client', 'dist', 'index.html')
             : path.join(__dirname, '..', 'public', 'index.html');
 
+        const ASSETS = (process.env.DEVELOPMENT_MODE)
+            ? path.join(__dirname, '..', '..', 'client', 'dist', 'assets')
+            : path.join(__dirname, '..', 'public');
+
         // Register middlewares
         this._app.use(sendStatusJsonMiddleware());
         this._app.use(bodyParser.json());
@@ -45,6 +49,8 @@ export class WebServer {
 
             res.sendFile(INDEX);
         });
+
+        this._app.use("/assets", express.static(ASSETS));
 
         registerApi(this._app);
 
