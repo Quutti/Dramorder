@@ -18,6 +18,10 @@ export interface PrunedOrder {
     createdAt: string;
 }
 
+export const ACTIVE_ORDER_FETCHING = "ACTIVE_ORDER_FETCHING";
+export const ACTIVE_ORDER_RECEIVED = "ACTIVE_ORDER_RECEIVED";
+export const ACTIVE_ORDER_FAILED = "ACTIVE_ORDER_FAILED";
+
 export interface ActiveOrderState {
     isFetching: boolean;
     order: Order;
