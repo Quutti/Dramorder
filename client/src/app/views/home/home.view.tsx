@@ -12,7 +12,6 @@ interface StoreProps {
 }
 
 const mapStateToProps = (state: RootState): StoreProps => {
-    console.log(state);
     return {
         isFetching: state.orderList.isFetching,
         orders: state.orderList.orders
@@ -22,16 +21,16 @@ const mapStateToProps = (state: RootState): StoreProps => {
 class HomeViewImpl extends React.Component<StoreProps, {}> {
 
     public render(): JSX.Element {
-
-        console.log(this.props);
-
-        const links = this.props.orders.map(order => {
-            return <div><Link to={`/${order.id}`}>{order.name}</Link></div>
+        const links = this.props.orders.map((order, index) => {
+            return <div key={index}><Link to={`/${order.id}`}>{order.name}</Link></div>
         });
 
         return (
             <div>
-                {links}
+                <h2>Orders</h2>
+                <div>
+                    {links}
+                </div>
             </div>
         )
     }
