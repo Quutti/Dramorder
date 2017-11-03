@@ -12,6 +12,7 @@ interface Endpoint {
     method: EndpointMethod;
     handler: RequestHandler;
     authRequired?: boolean;
+    middlewares?: RequestHandler[];
 }
 
 export const registerApi = (app: Express) => {
@@ -43,11 +44,15 @@ export const registerApi = (app: Express) => {
 const registerEndpointArray = (app: Express, endpoints: Endpoint[]) => {
     endpoints.forEach(ep => {
         const { url, handler, method, authRequired } = ep;
-        const middlewares = [];
+        let { middlewares } = ep;
+
+        if (!middlewares) {
+            middlewares = [];
+        }
 
         // We want to be really strict here
         if (authRequired !== false) {
-            middlewares.push(authMiddleware);
+            middlewares.unshift(authMiddleware);
         }
 
         app[method](url, middlewares, handler);
