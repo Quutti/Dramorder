@@ -11,6 +11,15 @@ export const fetchActiveOrder = (orderId: number) => {
     }
 }
 
+export const loginActiveOrder = (orderId: number, password: string) => {
+    return (dispatch) => {
+        dispatch(fetchingActiveOrder());
+        axios.post(`api/orders/${orderId}/auth`, { password })
+            .then(res => dispatch(fetchActiveOrder(orderId)))
+            .catch(err => dispatch(failureActiveOrder(err)));
+    }
+}
+
 const fetchingActiveOrder = () => {
     return { type: ACTIVE_ORDER_FETCHING }
 }
