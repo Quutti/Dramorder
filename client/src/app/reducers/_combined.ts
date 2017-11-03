@@ -1,5 +1,7 @@
 import { combineReducers } from "redux";
 
-export default combineReducers({
+import orderList from "./order-list";
 
+export default combineReducers({
+    orderList
 });
