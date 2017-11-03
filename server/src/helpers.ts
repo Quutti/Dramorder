@@ -15,3 +15,12 @@ export const dateToJsonDate = (date: Date): string => {
         (d < 10) ? `0${d}` : d
     ].join("-");
 }
+
+export const safeIntergerArray = (intArr: number[]) => {
+    return intArr.map(i => {
+        if (typeof i !== "number") {
+            i = -1
+        }
+        return i;
+    });
+}

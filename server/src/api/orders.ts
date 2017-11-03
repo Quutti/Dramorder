@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import * as DB from "easy-mysql-with-promise";
 import * as auth from "../auth";
 import * as helpers from "../helpers";
-
+import * as lists from "./lists";
 import { Response } from "../types";
 
 
@@ -14,31 +14,12 @@ export interface Order {
     createdAt: string;
     currencyMultiplier: number;
     closedAt?: string;
-    lists?: OrderList[];
+    lists?: lists.OrderList[];
     status: string;
 }
 
-export interface OrderList {
-    id?: number;
-    orderId?: number;
-    name: string;
-    items?: OrderItem[];
-}
-
-export interface OrderItem {
-    id?: number;
-    listId?: number;
-    name: string;
-    price: number;
-    href: string;
-}
-
 export const orderAuth: RequestHandler = (req, res: Response) => {
-    const orderId = parseInt(req.params.orderId, 10) || null;
-    if (!orderId) {
-        return res.sendStatusJson(404);
-    }
-
+    const orderId = parseInt(req.params.orderId, 10);
     const { password } = req.body;
     if (typeof password !== "string") {
         return res.sendStatusJson(400, { message: "Password must be given", property: "password" })
@@ -72,10 +53,7 @@ export const orderAuth: RequestHandler = (req, res: Response) => {
 }
 
 export const orderData: RequestHandler = (req, res: Response) => {
-    const orderId = parseInt(req.params.orderId, 10) || null;
-    if (!orderId) {
-        return res.sendStatusJson(404);
-    }
+    const orderId = parseInt(req.params.orderId, 10);
 
     getOrder(orderId)
         .then(order => {
@@ -134,6 +112,41 @@ export const addOrder: RequestHandler = (req, res: Response) => {
         });
 }
 
+export const orderUpdate: RequestHandler = (req, res: Response) => {
+    const orderId = parseInt(req.params.orderId, 10);
+    let { name, currencyMultiplier, status } = req.body;
+
+    if (["undefined", "string"].indexOf(typeof name) === -1) {
+        return res.sendStatusJson(400, { message: "Name should be a string", property: "name" });
+    }
+
+    if (["undefined", "string"].indexOf(typeof status) === -1) {
+        return res.sendStatusJson(400, { message: "Status should be a string", property: "status" });
+    }
+
+    if (["undefined", "number"].indexOf(typeof currencyMultiplier) === -1) {
+        return res.sendStatusJson(400, { message: "Currency multiplier should be a number", property: "currencyMultiplier" });
+    }
+
+    const orderUpdate: Partial<Order> = {}
+
+    if (name !== undefined) {
+        orderUpdate.name = name;
+    }
+
+    if (status !== undefined) {
+        orderUpdate.status = status;
+    }
+
+    if (currencyMultiplier !== undefined) {
+        orderUpdate.currencyMultiplier = currencyMultiplier;
+    }
+
+    DB.query("UPDATE orders SET ? WHERE id = ?", [orderUpdate, orderId])
+        .then(() => res.sendStatusJson(200))
+        .catch(err => helpers.handleError(err, res));
+}
+
 const sanitazeOrder = (order: Order): Partial<Order> => {
     const o = { ...order };
     delete o.passwordHash;
@@ -146,10 +159,10 @@ const getOrder = (orderId: number): Promise<Order> => {
         .then(result => {
             const order: Order = result[0] || null;
             if (!order) {
-                return order;
+                return null;
             }
 
-            return getOrderLists(order.id)
+            return lists.getOrderLists(order.id)
                 .then(lists => {
                     order.lists = lists;
                     return order;
@@ -157,41 +170,4 @@ const getOrder = (orderId: number): Promise<Order> => {
                 .catch(err => Promise.reject(err));
         })
         .catch(err => Promise.reject(err));
-}
-
-const getOrderLists = (orderId: number): Promise<OrderList[]> => {
-    const listsSql = `SELECT * FROM lists WHERE orderId = ?`;
-    const itemsSql = `
-        SELECT *
-        FROM items
-        WHERE listId IN (
-            SELECT id
-            FROM lists
-            WHERE orderId = ?
-        )
-    `;
-
-    return Promise.all([DB.query(listsSql, [orderId]), DB.query(itemsSql, [orderId])])
-        .then(res => {
-            const lists: OrderList[] = res[0];
-            const items: OrderItem[] = res[1];
-            const listIdMap: number[] = [];
-
-            lists.forEach((list) => {
-                delete list.orderId;
-                list.items = [];
-                listIdMap.push(list.id);
-            });
-
-            items.forEach((item) => {
-                const index = listIdMap.indexOf(item.listId);
-                if (index > -1) {
-                    lists[index].items.push(item);
-                    delete item.listId;
-                }
-            });
-
-            return lists;
-        });
-
 }
