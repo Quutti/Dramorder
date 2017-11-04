@@ -41,6 +41,8 @@ export class WebServer {
         this._app.use(bodyParser.urlencoded({ extended: true }));
         this._app.use(cookieParser());
 
+        this._app.use("/assets", express.static(ASSETS));
+
         this._app.use((req, res, next) => {
             if (req.originalUrl.indexOf('/api/') !== -1) {
                 next();
@@ -49,8 +51,6 @@ export class WebServer {
 
             res.sendFile(INDEX);
         });
-
-        this._app.use("/assets", express.static(ASSETS));
 
         registerApi(this._app);
 
