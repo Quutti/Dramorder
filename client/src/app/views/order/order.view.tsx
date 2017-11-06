@@ -7,6 +7,7 @@ import { fetchActiveOrder, loginActiveOrder } from "../../actions/active-order";
 import { RootState, PrunedOrder, Order } from "../../types";
 
 import { LoginForm } from "./components/login-form";
+import { List } from "./components/list";
 
 interface StoreProps {
     orderInfo: PrunedOrder;
@@ -61,7 +62,21 @@ class OrderViewImpl extends React.Component<MergedProps, {}> {
             )
         }
 
-        return <div> Logged in! </div>
+        const lists = this.props.order.lists.map(list => {
+            return (
+                <div className="col col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                    <List key={list.id} list={list} currencyMultiplier={this.props.order.currencyMultiplier} />
+                </div>
+            );
+        });
+
+        return (
+            <div className="container">
+                <div className="row">
+                    {lists}
+                </div>
+            </div>
+        )
 
     }
 

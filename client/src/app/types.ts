@@ -13,7 +13,7 @@ export interface OrderListState {
 }
 
 export interface PrunedOrder {
-    id: number;
+    id?: number;
     name: string;
     createdAt: string;
 }
@@ -34,17 +34,17 @@ export interface Order extends PrunedOrder {
 }
 
 export interface OrderList {
-    id: number;
+    id?: number;
     name: string;
-    added: string;
+    added?: string;
     items: OrderItem[]
 }
 
 export interface OrderItem {
-    id: number;
+    id?: number;
     name: string;
     href: string;
     price: number;
     quantity: number;
-    added: string;
+    added?: string;
 }
