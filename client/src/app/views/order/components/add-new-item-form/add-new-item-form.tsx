@@ -1,7 +1,8 @@
 import * as React from "react";
-import * as _ from "lodash";
 
 import { OrderItem } from "../../../../types";
+
+import { TextInput, TextInputValidator } from "../../../../components/text-input";
 
 export type AddNewItemFormSubmitHandler = (item: OrderItem) => void;
 
@@ -16,10 +17,17 @@ interface OwnState {
     href: string;
 }
 
+const numberValidator: TextInputValidator = (value: string): string => {
+    if (!/^(([0-9]*)|(([0-9]*)\.([0-9]*)))$/.test(value)) {
+        return "Value should be a number with . (dot) as a separator";
+    }
+    return "";
+}
+
 const inputSchema = {
     name: { label: "Bottle name" },
-    price: { label: "Price per unit" },
-    quantity: { label: "Quantity", type: "number" },
+    price: { label: "Price per unit", validator: numberValidator },
+    quantity: { label: "Quantity", validator: numberValidator },
     href: { label: "Http/https link to bottle" }
 }
 
@@ -42,16 +50,17 @@ export class AddNewItemForm extends React.Component<OwnProps, OwnState> {
     public render(): JSX.Element {
 
         const inputs = Object.keys(this.state).map((name, index) => {
-            const id = _.uniqueId("add-new-item-form");
             const schema = inputSchema[name];
-            const { label, type } = schema;
-            const inputType = (type) ? type : "text";
+            const { label, validator } = schema;
 
             return (
-                <div className="form-group" key={index}>
-                    <label htmlFor={id}>{label}</label>
-                    <input className="form-control" name={name} type={inputType} onChange={this._handleInputChange} />
-                </div>
+                <TextInput
+                    key={index}
+                    name={name}
+                    label={label}
+                    onChange={this._handleInputChange}
+                    validator={validator}
+                />
             )
         });
 
@@ -70,10 +79,10 @@ export class AddNewItemForm extends React.Component<OwnProps, OwnState> {
         this.props.onSubmit(this.state);
     }
 
-    private _handleInputChange(evt) {
+    private _handleInputChange(value: string, name: string) {
         this.setState({
-            [evt.target.name]: evt.target.value
-        })
+            [name]: value
+        } as any)
     }
 
 }
