@@ -39,27 +39,25 @@ export class TextInput extends React.Component<OwnProps, OwnState> {
     public render(): JSX.Element {
 
         const { name, label } = this.props;
-
-        const rootClasses = classNames({
-            "form-group": true,
-            "has-danger": !!this.state.errorText
-        });
+        const { value, errorText } = this.state;
+        const isInvalid = !!errorText;
 
         const inputClasses = classNames({
             "form-control": true,
-            "form-control-danger": !!this.state.errorText
+            "is-invalid": isInvalid
         });
 
         return (
-            <div className={rootClasses}>
+            <div className="form-group">
                 <label htmlFor={this._id}>{label}</label>
                 <input
                     className={inputClasses}
                     type="text"
                     name={name}
-                    value={this.state.value}
+                    value={value}
                     id={this._id}
                     onChange={this._handleOnChange} />
+                {isInvalid && <div className="invalid-feedback">{errorText}</div>}
             </div>
         )
     }
