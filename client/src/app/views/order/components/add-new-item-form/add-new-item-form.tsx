@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { OrderItem } from "../../../../types";
+import * as validators from "../../../../helpers/text-input-validators";
 
 import { TextInput, TextInputValidator } from "../../../../components/text-input";
 
@@ -17,18 +18,11 @@ interface OwnState {
     href: string;
 }
 
-const numberValidator: TextInputValidator = (value: string): string => {
-    if (!/^(([0-9]*)|(([0-9]*)\.([0-9]*)))$/.test(value)) {
-        return "Value should be a number with . (dot) as a separator";
-    }
-    return "";
-}
-
 const inputSchema = {
     name: { label: "Bottle name" },
-    price: { label: "Price per unit", validator: numberValidator },
-    quantity: { label: "Quantity", validator: numberValidator },
-    href: { label: "Http/https link to bottle" }
+    price: { label: "Price per unit", validator: validators.numberValidator },
+    quantity: { label: "Quantity", validator: validators.integerValidator },
+    href: { label: "Http/https link to bottle", validator: validators.hrefValidator }
 }
 
 export class AddNewItemForm extends React.Component<OwnProps, OwnState> {
