@@ -4,8 +4,6 @@ import {
     ACTIVE_ORDER_FAILED,
     ACTIVE_ORDER_FETCHING,
     ACTIVE_ORDER_RECEIVED,
-    ACTIVE_ORDER_ADD_ITEM,
-    ACTIVE_ORDER_ADD_LIST,
     Order,
     OrderItem
 } from "../types";
@@ -32,6 +30,15 @@ export const addItemActiveOrder = (orderId: number, listId: number, newItem: Ord
     return (dispatch) => {
         dispatch(fetchingActiveOrder());
         axios.post(`api/orders/${orderId}/lists/${listId}/items`, newItem)
+            .then(res => dispatch(fetchActiveOrder(orderId)))
+            .catch(err => dispatch(failureActiveOrder(err)));
+    }
+}
+
+export const addListActiveOrder = (orderId: number, listName: string) => {
+    return (dispatch) => {
+        dispatch(fetchingActiveOrder());
+        axios.post(`api/orders/${orderId}/lists`, { name: listName })
             .then(res => dispatch(fetchActiveOrder(orderId)))
             .catch(err => dispatch(failureActiveOrder(err)));
     }

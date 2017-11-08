@@ -3,9 +3,11 @@ import { connect } from "react-redux";
 import * as redux from "redux";
 import { RouteComponentProps } from "react-router-dom";
 
-import { fetchActiveOrder, loginActiveOrder } from "../../actions/active-order";
+import { fetchActiveOrder, loginActiveOrder, addListActiveOrder } from "../../actions/active-order";
 import { RootState, PrunedOrder, Order } from "../../types";
 
+import { TextInput } from "../../components/text-input";
+import { Container, Col, Row } from "../../components/grid";
 import { LoginForm } from "./components/login-form";
 import { List } from "./components/list";
 
@@ -14,6 +16,10 @@ interface StoreProps {
     order: Order;
     isFetching: boolean;
     dispatch?: redux.Dispatch<RootState>
+}
+
+interface OwnState {
+    newListName: string;
 }
 
 type MergedProps = StoreProps & RouteComponentProps<any>;
@@ -39,12 +45,18 @@ const mapStateToProps = (state: RootState, ownProps: MergedProps): StoreProps =>
     }
 }
 
-class OrderViewImpl extends React.Component<MergedProps, {}> {
+class OrderViewImpl extends React.Component<MergedProps, OwnState> {
 
     constructor(props) {
         super(props);
 
+        this.state = {
+            newListName: ""
+        }
+
         this._handleLoginFormSubmit = this._handleLoginFormSubmit.bind(this);
+        this._handleNewListNameOnChange = this._handleNewListNameOnChange.bind(this);
+        this._handleAddNewListClick = this._handleAddNewListClick.bind(this);
     }
 
     public render(): JSX.Element {
@@ -62,22 +74,53 @@ class OrderViewImpl extends React.Component<MergedProps, {}> {
             )
         }
 
-        const lists = this.props.order.lists.map(list => {
+        const lists = this.props.order.lists.map((list, index) => {
             return (
-                <div className="col col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                    <List key={list.id} list={list} order={this.props.order} dispatch={this.props.dispatch} />
-                </div>
+                <Col key={index} lg={6} xl={6}>
+                    <List list={list} order={this.props.order} dispatch={this.props.dispatch} />
+                </Col>
             );
         });
 
         return (
-            <div className="container">
-                <div className="row">
-                    {lists}
-                </div>
+            <div>
+                <Container>
+                    <Row>
+                        <Col>
+                            <div className="mt-1">
+                                <form>
+                                    <div className="form-row align-items-center">
+                                        <div className="col-auto">
+                                            <TextInput
+                                                name="listName"
+                                                required={true}
+                                                placeholder="Name for the new list"
+                                                onChange={this._handleNewListNameOnChange}
+                                                marginBottom={0} />
+                                        </div>
+                                        <div className="col-auto">
+                                            <button
+                                                type="submit"
+                                                disabled={!this.state.newListName}
+                                                onClick={this._handleAddNewListClick}
+                                                className="btn btn-primary">Add new list</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </Col>
+                    </Row>
+                </Container>
+
+                <Container>
+                    <Row>
+                        {lists}
+                    </Row>
+                </Container>
+
             </div>
         )
-
     }
 
     public componentWillMount() {
@@ -88,6 +131,19 @@ class OrderViewImpl extends React.Component<MergedProps, {}> {
     private _handleLoginFormSubmit(password: string) {
         const orderId = parseInt(this.props.match.params.orderId, 10);
         this.props.dispatch(loginActiveOrder(orderId, password));
+    }
+
+    private _handleNewListNameOnChange(value: string) {
+        this.setState({
+            newListName: value
+        });
+    }
+
+    private _handleAddNewListClick() {
+        const { newListName } = this.state;
+        if (newListName) {
+            this.props.dispatch(addListActiveOrder(this.props.order.id, newListName));
+        }
     }
 }
 
