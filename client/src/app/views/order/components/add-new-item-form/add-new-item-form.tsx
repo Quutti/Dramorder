@@ -19,10 +19,10 @@ interface OwnState {
 }
 
 const inputSchema = {
-    name: { label: "Bottle name" },
-    price: { label: "Price per unit", validator: validators.numberValidator },
-    quantity: { label: "Quantity", validator: validators.integerValidator },
-    href: { label: "Http/https link to bottle", validator: validators.hrefValidator }
+    name: { label: "Bottle name", required: true },
+    price: { label: "Price per unit", validator: validators.numberValidator, required: true },
+    quantity: { label: "Quantity", validator: validators.integerValidator, required: true },
+    href: { label: "Http/https link to bottle", validator: validators.hrefValidator, required: true }
 }
 
 export class AddNewItemForm extends React.Component<OwnProps, OwnState> {
@@ -42,10 +42,11 @@ export class AddNewItemForm extends React.Component<OwnProps, OwnState> {
     }
 
     public render(): JSX.Element {
+        let saveButtonEnabled = this._allInputsValid();
 
         const inputs = Object.keys(this.state).map((name, index) => {
             const schema = inputSchema[name];
-            const { label, validator } = schema;
+            const { label, validator, required } = schema;
 
             return (
                 <TextInput
@@ -54,6 +55,7 @@ export class AddNewItemForm extends React.Component<OwnProps, OwnState> {
                     label={label}
                     onChange={this._handleInputChange}
                     validator={validator}
+                    required={required}
                 />
             )
         });
@@ -61,8 +63,8 @@ export class AddNewItemForm extends React.Component<OwnProps, OwnState> {
         return (
             <form onSubmit={this._handleSubmit}>
                 {inputs}
-                <div>
-                    <button className="btn btn-primary" type="submit">Save</button>
+                <div className="text-right">
+                    <button className="btn btn-primary" type="submit" disabled={!saveButtonEnabled}>Save</button>
                 </div>
             </form>
         )
@@ -73,10 +75,24 @@ export class AddNewItemForm extends React.Component<OwnProps, OwnState> {
         this.props.onSubmit(this.state);
     }
 
+    private _allInputsValid(): boolean {
+        const { name, price, quantity, href } = this.state;
+
+        const nameOk = name !== "";
+        const hrefOk = href !== "";
+        const priceOk = typeof price === "number" && price > 0;
+        const quantityOk = typeof quantity === "number" && price > 0;
+
+        return nameOk && hrefOk && priceOk && quantityOk;
+    }
+
     private _handleInputChange(value: string, name: string) {
-        this.setState({
-            [name]: value
-        } as any)
+        if (["quantity", "price"].indexOf(name) > -1) {
+            const intValue = parseInt(value, 10) || 0;
+            this.setState({ [name]: intValue } as any);
+        } else {
+            this.setState({ [name]: value } as any)
+        }
     }
 
 }

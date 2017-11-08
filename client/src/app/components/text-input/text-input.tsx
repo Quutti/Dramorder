@@ -11,6 +11,7 @@ interface OwnProps {
     name: string;
     value?: string;
     validator?: TextInputValidator;
+    required?: boolean;
     onChange: TextInputChangeHandler;
 }
 
@@ -38,7 +39,7 @@ export class TextInput extends React.Component<OwnProps, OwnState> {
 
     public render(): JSX.Element {
 
-        const { name, label } = this.props;
+        const { name, label, required } = this.props;
         const { value, errorText } = this.state;
         const isInvalid = !!errorText;
 
@@ -56,7 +57,8 @@ export class TextInput extends React.Component<OwnProps, OwnState> {
                     name={name}
                     value={value}
                     id={this._id}
-                    onChange={this._handleOnChange} />
+                    onChange={this._handleOnChange}
+                    required={required} />
                 {isInvalid && <div className="invalid-feedback">{errorText}</div>}
             </div>
         )
