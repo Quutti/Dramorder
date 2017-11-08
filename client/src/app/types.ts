@@ -21,6 +21,8 @@ export interface PrunedOrder {
 export const ACTIVE_ORDER_FETCHING = "ACTIVE_ORDER_FETCHING";
 export const ACTIVE_ORDER_RECEIVED = "ACTIVE_ORDER_RECEIVED";
 export const ACTIVE_ORDER_FAILED = "ACTIVE_ORDER_FAILED";
+export const ACTIVE_ORDER_ADD_LIST = "ACTIVE_ORDER_ADD_LIST";
+export const ACTIVE_ORDER_ADD_ITEM = "ACTIVE_ORDER_ADD_ITEM";
 
 export interface ActiveOrderState {
     isFetching: boolean;

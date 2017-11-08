@@ -1,11 +1,14 @@
 import * as React from "react";
+import * as redux from "redux";
 
-import { OrderList } from "../../../../types";
+import { RootState, Order, OrderList, OrderItem } from "../../../../types";
 import { AddNewItemForm } from "../add-new-item-form";
+import { addItemActiveOrder } from "../../../../actions/active-order";
 
 interface OwnProps {
-    currencyMultiplier: number;
+    order: Order;
     list: OrderList;
+    dispatch: redux.Dispatch<RootState>;
 }
 
 interface OwnState {
@@ -19,6 +22,8 @@ export class List extends React.Component<OwnProps, OwnState> {
         this.state = {
             addingNew: false
         }
+
+        this._handleAddNewItemSubmit = this._handleAddNewItemSubmit.bind(this);
     }
 
     public render(): JSX.Element {
@@ -45,14 +50,14 @@ export class List extends React.Component<OwnProps, OwnState> {
             priceSum += item.price * item.quantity;
         });
 
-        const withCurrencyExtra = priceSum * this.props.currencyMultiplier;
+        const withCurrencyExtra = priceSum * this.props.order.currencyMultiplier;
         const currencyExtra = withCurrencyExtra - priceSum;
 
         return (
             <div>
                 <h2>{list.name}</h2>
                 <button className="btn btn-default" onClick={() => this.setState({ addingNew: true })}>Add item</button>
-                {this.getAddItemContainer()}
+                {this._getAddItemContainer()}
                 <div className="table-responsive">
                     <table className="table">
                         <thead>
@@ -84,13 +89,17 @@ export class List extends React.Component<OwnProps, OwnState> {
 
     }
 
-    public getAddItemContainer() {
+    private _getAddItemContainer() {
         if (!this.state.addingNew) {
             return null;
         }
 
-        return <AddNewItemForm onSubmit={(item) => console.log(item)} />
+        return <AddNewItemForm onSubmit={this._handleAddNewItemSubmit} />
+    }
 
+    private _handleAddNewItemSubmit(item: OrderItem) {
+        const { order, dispatch, list } = this.props;
+        dispatch(addItemActiveOrder(order.id, list.id, item));
     }
 
 }

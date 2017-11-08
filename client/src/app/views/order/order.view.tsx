@@ -65,7 +65,7 @@ class OrderViewImpl extends React.Component<MergedProps, {}> {
         const lists = this.props.order.lists.map(list => {
             return (
                 <div className="col col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                    <List key={list.id} list={list} currencyMultiplier={this.props.order.currencyMultiplier} />
+                    <List key={list.id} list={list} order={this.props.order} dispatch={this.props.dispatch} />
                 </div>
             );
         });
