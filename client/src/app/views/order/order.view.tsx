@@ -9,6 +9,7 @@ import { RootState, PrunedOrder, Order } from "../../types";
 import { TextInput } from "../../components/text-input";
 import { Container, Col, Row } from "../../components/grid";
 import { LoginForm } from "./components/login-form";
+import { AddNewListForm } from "./components/add-new-list-form";
 import { List } from "./components/list";
 
 interface StoreProps {
@@ -18,9 +19,6 @@ interface StoreProps {
     dispatch?: redux.Dispatch<RootState>
 }
 
-interface OwnState {
-    newListName: string;
-}
 
 type MergedProps = StoreProps & RouteComponentProps<any>;
 
@@ -45,18 +43,13 @@ const mapStateToProps = (state: RootState, ownProps: MergedProps): StoreProps =>
     }
 }
 
-class OrderViewImpl extends React.Component<MergedProps, OwnState> {
+class OrderViewImpl extends React.Component<MergedProps, {}> {
 
     constructor(props) {
         super(props);
 
-        this.state = {
-            newListName: ""
-        }
-
         this._handleLoginFormSubmit = this._handleLoginFormSubmit.bind(this);
-        this._handleNewListNameOnChange = this._handleNewListNameOnChange.bind(this);
-        this._handleAddNewListClick = this._handleAddNewListClick.bind(this);
+        this._handleAddNewListFormSubmit = this._handleAddNewListFormSubmit.bind(this);
     }
 
     public render(): JSX.Element {
@@ -87,28 +80,7 @@ class OrderViewImpl extends React.Component<MergedProps, OwnState> {
                 <Container>
                     <Row>
                         <Col>
-                            <div className="mt-1">
-                                <form>
-                                    <div className="form-row align-items-center">
-                                        <div className="col-auto">
-                                            <TextInput
-                                                name="listName"
-                                                required={true}
-                                                placeholder="Name for the new list"
-                                                onChange={this._handleNewListNameOnChange}
-                                                marginBottom={0} />
-                                        </div>
-                                        <div className="col-auto">
-                                            <button
-                                                type="submit"
-                                                disabled={!this.state.newListName}
-                                                onClick={this._handleAddNewListClick}
-                                                className="btn btn-primary">Add new list</button>
-                                        </div>
-                                    </div>
-                                </form>
-
-                            </div>
+                            <AddNewListForm onSubmit={this._handleAddNewListFormSubmit} />
                         </Col>
                     </Row>
                 </Container>
@@ -133,18 +105,12 @@ class OrderViewImpl extends React.Component<MergedProps, OwnState> {
         this.props.dispatch(loginActiveOrder(orderId, password));
     }
 
-    private _handleNewListNameOnChange(value: string) {
-        this.setState({
-            newListName: value
-        });
-    }
-
-    private _handleAddNewListClick() {
-        const { newListName } = this.state;
+    private _handleAddNewListFormSubmit(newListName: string) {
         if (newListName) {
             this.props.dispatch(addListActiveOrder(this.props.order.id, newListName));
         }
     }
+
 }
 
 export const OrderView = connect<StoreProps, any, any>(mapStateToProps)(OrderViewImpl);
