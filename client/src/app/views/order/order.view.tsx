@@ -77,7 +77,7 @@ class OrderViewImpl extends React.Component<MergedProps, {}> {
 
         return (
             <div>
-                <Container>
+                <Container className="mt-5">
                     <Row>
                         <Col>
                             <AddNewListForm onSubmit={this._handleAddNewListFormSubmit} />
@@ -85,7 +85,7 @@ class OrderViewImpl extends React.Component<MergedProps, {}> {
                     </Row>
                 </Container>
 
-                <Container>
+                <Container className="mt-5">
                     <Row>
                         {lists}
                     </Row>
