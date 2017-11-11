@@ -3,7 +3,7 @@ import * as redux from "redux";
 
 import { RootState, Order, OrderList, OrderItem } from "../../../../types";
 import { AddNewItemForm } from "../add-new-item-form";
-import { addItemActiveOrder } from "../../../../actions/active-order";
+import { addItemActiveOrder, deleteItemActiveOrder } from "../../../../actions/active-order";
 
 interface OwnProps {
     order: Order;
@@ -39,6 +39,9 @@ export class List extends React.Component<OwnProps, OwnState> {
                     <td>
                         {item.href && <a href={item.href} target="_blank">Link</a>}
                     </td>
+                    <td>
+                        <button className="btn btn-default" onClick={() => this._removeItem(item.id)}>Remove</button>
+                    </td>
                 </tr>
             )
         });
@@ -66,6 +69,7 @@ export class List extends React.Component<OwnProps, OwnState> {
                                 <th>Price</th>
                                 <th>Quantity</th>
                                 <th>Link</th>
+                                <th>Remove</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -73,13 +77,14 @@ export class List extends React.Component<OwnProps, OwnState> {
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td></td>
+                                <td />
                                 <td>
                                     <div>{currencyExtra.toFixed(2)} €</div>
                                     <div>{withCurrencyExtra.toFixed(2)} €</div>
                                 </td>
                                 <td>{quantitySum}</td>
-                                <td></td>
+                                <td />
+                                <td />
                             </tr>
                         </tfoot>
                     </table>
@@ -100,6 +105,11 @@ export class List extends React.Component<OwnProps, OwnState> {
     private _handleAddNewItemSubmit(item: OrderItem) {
         const { order, dispatch, list } = this.props;
         dispatch(addItemActiveOrder(order.id, list.id, item));
+    }
+
+    private _removeItem(itemId: number) {
+        const { order, dispatch, list } = this.props;
+        dispatch(deleteItemActiveOrder(order.id, list.id, itemId));
     }
 
 }
