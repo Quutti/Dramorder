@@ -1,0 +1,21 @@
+
+
+.root {
+    background-color: #fff;
+    margin-bottom: 20px;
+}
+
+.heading {
+    padding: 15px;
+
+    & h2 {
+        padding: 0;
+        margin: 0;
+        font-size: 2rem;
+        font-weight: normal;
+    }
+}
+
+.body {
+    padding: 0 15px 15px;
+}

@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as redux from "redux";
 
+import { Card } from "../../../../components/card";
 import { RootState, Order, OrderList, OrderItem } from "../../../../types";
 import { AddNewItemForm } from "../add-new-item-form";
 import { addItemActiveOrder, deleteItemActiveOrder } from "../../../../actions/active-order";
@@ -57,8 +58,7 @@ export class List extends React.Component<OwnProps, OwnState> {
         const currencyExtra = withCurrencyExtra - priceSum;
 
         return (
-            <div>
-                <h2>{list.name}</h2>
+            <Card heading={list.name}>
                 <button className="btn btn-default" onClick={() => this.setState({ addingNew: true })}>Add item</button>
                 {this._getAddItemContainer()}
                 <div className="table-responsive">
@@ -89,7 +89,7 @@ export class List extends React.Component<OwnProps, OwnState> {
                         </tfoot>
                     </table>
                 </div>
-            </div>
+            </Card>
         )
 
     }
