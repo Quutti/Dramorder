@@ -1,0 +1,16 @@
+.root {
+    display: flex;
+}
+
+.label {
+    flex: 1 1 auto;
+    font-weight: bold;
+}
+
+.value {
+    flex: 0 0 auto;
+}
+
+.valueBig {
+    font-size: 1.75em;
+}
