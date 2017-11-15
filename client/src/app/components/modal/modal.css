@@ -1,0 +1,79 @@
+.root {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    visibility: hidden;
+
+    &.rootVisible {
+        visibility: visible;
+    }
+    
+    z-index: 3000;
+}
+
+.shroud {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: #000;
+
+    opacity: 0;
+    transition: opacity .2s ease;
+    z-index: 1;
+
+    &.shroudVisible {
+        opacity: 0.5;
+    }
+}
+
+.modal {
+    position: relative;
+    z-index: 2;
+    transition: transform .25s ease;
+    transform: translateY(-120%);
+    margin: 50px auto;
+    width: 600px;
+    max-width: 95%;
+    background-color: #fff;
+
+
+    &.modalVisible {
+        transform: translateY(0);
+    }
+}
+
+.header {
+    padding: 15px;
+    position: relative;
+
+    & h2 {
+        padding: 0;
+        margin: 0;
+        font-size: 1.75rem;
+        font-weight: normal;
+        margin-right: 30px;
+    }
+}
+
+.closeButton {
+    position: absolute;
+    top: 3px;
+    right: 15px;
+    background: transparent;
+    border: 0;
+    font-size: 1.5rem;
+}
+
+.body {
+    padding: 5px 15px 15px;
+
+}
+
+.footer {
+    padding: 5px 15px 15px;
+    text-align: right;
+}
