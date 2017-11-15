@@ -16,7 +16,30 @@ body {
     border-radius: 0;
 }
 
-.btn {
-    border-radius: 0;
-    cursor: pointer;
+button {
+    border-radius: 0 !important;
+    cursor: pointer !important;
+
+    &:disabled {
+        cursor: not-allowed !important;
+    }
+}
+
+.table {
+
+    & thead {
+
+        & th {
+            border-top: 0;
+            font-weight: normal;
+            font-size: .9rem;
+        }
+
+    }
+
+    & td,
+    & th {
+        padding: .5rem;
+    }
+
 }

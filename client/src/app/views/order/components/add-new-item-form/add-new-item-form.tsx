@@ -1,14 +1,18 @@
 import * as React from "react";
 
-import { OrderItem } from "../../../../types";
+import { OrderItem, OrderList } from "../../../../types";
 import * as validators from "../../../../helpers/text-input-validators";
 
+import { Modal, ModalButton } from "../../../../components/modal";
 import { TextInput, TextInputValidator } from "../../../../components/text-input";
 
 export type AddNewItemFormSubmitHandler = (item: OrderItem) => void;
 
 interface OwnProps {
     onSubmit: AddNewItemFormSubmitHandler;
+    onCloseRequest: () => void;
+    visible: boolean;
+    list: OrderList;
 }
 
 interface OwnState {
@@ -16,6 +20,7 @@ interface OwnState {
     price: number;
     quantity: number;
     href: string;
+    visible: boolean;
 }
 
 const inputSchema = {
@@ -34,40 +39,58 @@ export class AddNewItemForm extends React.Component<OwnProps, OwnState> {
             name: "",
             price: 0,
             quantity: 1,
-            href: ""
+            href: "",
+            visible: false
         }
 
         this._handleInputChange = this._handleInputChange.bind(this);
         this._handleSubmit = this._handleSubmit.bind(this);
+        this._handleClose = this._handleClose.bind(this);
     }
 
     public render(): JSX.Element {
         let saveButtonEnabled = this._allInputsValid();
 
-        const inputs = Object.keys(this.state).map((name, index) => {
-            const schema = inputSchema[name];
-            const { label, validator, required } = schema;
+        const inputs = Object.keys(this.state)
+            .filter(name => {
+                return (name in inputSchema)
+            })
+            .map((name, index) => {
+                const schema = inputSchema[name];
+                const { label, validator, required } = schema;
 
-            return (
-                <TextInput
-                    key={index}
-                    name={name}
-                    label={label}
-                    onChange={this._handleInputChange}
-                    validator={validator}
-                    required={required}
-                />
-            )
-        });
+                return (
+                    <TextInput
+                        key={index}
+                        name={name}
+                        label={label}
+                        onChange={this._handleInputChange}
+                        validator={validator}
+                        required={required}
+                    />
+                )
+            });
+
+        const modalButtons: ModalButton[] = [{
+            text: "Save",
+            disabled: !saveButtonEnabled,
+            primary: true,
+            onClick: (evt) => this._handleSubmit(evt)
+        }];
 
         return (
-            <form onSubmit={this._handleSubmit}>
-                {inputs}
-                <div className="text-right">
-                    <button className="btn btn-primary" type="submit" disabled={!saveButtonEnabled}>Save</button>
-                </div>
-            </form>
+            <Modal heading={`Add new item (${this.props.list.name})`} visible={this.state.visible} onCloseRequest={this._handleClose} buttons={modalButtons}>
+                <form onSubmit={this._handleSubmit}>
+                    {inputs}
+                </form>
+            </Modal>
         )
+    }
+
+    public componentWillReceiveProps(newProps: OwnProps) {
+        if (newProps.visible !== this.props.visible) {
+            this.setState({ visible: newProps.visible });
+        }
     }
 
     private _handleSubmit(evt) {
@@ -87,12 +110,20 @@ export class AddNewItemForm extends React.Component<OwnProps, OwnState> {
     }
 
     private _handleInputChange(value: string, name: string) {
-        if (["quantity", "price"].indexOf(name) > -1) {
+        if (name === "quantity") {
             const intValue = parseInt(value, 10) || 0;
             this.setState({ [name]: intValue } as any);
+        } else if (name === "price") {
+            const decValue = parseFloat(value) || 0;
+            this.setState({ [name]: decValue } as any);
         } else {
             this.setState({ [name]: value } as any)
         }
+    }
+
+    private _handleClose() {
+        this.setState({ visible: false });
+        this.props.onCloseRequest();
     }
 
 }

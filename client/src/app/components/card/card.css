@@ -7,15 +7,35 @@
 
 .heading {
     padding: 15px;
+    position: relative;
 
     & h2 {
         padding: 0;
         margin: 0;
-        font-size: 2rem;
+        font-size:  1.75rem;
         font-weight: normal;
     }
 }
 
 .body {
     padding: 0 15px 15px;
+}
+
+.footer {
+    padding: 0 15px 15px;
+    text-align: right;
+}
+
+.footerButton {
+    background: transparent;
+    border: 0;
+    margin-left: 10px;
+}
+
+.footerButtonIcon {
+    font-size: 1.2rem;
+}
+
+.footerButtonText {
+    margin-left: 3px;
 }

@@ -1,10 +1,14 @@
 import * as React from "react";
 import * as redux from "redux";
 
-import { Card } from "../../../../components/card";
+import { Card, CardButton } from "../../../../components/card";
+import { Summary, SummaryItem } from "../../../../components/summary";
+import { Modal } from "../../../../components/modal";
 import { RootState, Order, OrderList, OrderItem } from "../../../../types";
 import { AddNewItemForm } from "../add-new-item-form";
 import { addItemActiveOrder, deleteItemActiveOrder } from "../../../../actions/active-order";
+
+const styles: any = require("./list.css");
 
 interface OwnProps {
     order: Order;
@@ -29,23 +33,38 @@ export class List extends React.Component<OwnProps, OwnState> {
 
     public render(): JSX.Element {
 
-        const { list } = this.props;
+        const toPrice = (price: number) => `${price.toFixed(2)} €`;
+
+        const { list, order } = this.props;
 
         const itemRows = list.items.map(item => {
+            const nameElem = (item.href)
+                ? <a href={item.href} target="_blank">{item.name}</a>
+                : <span>{item.name}</span>;
+
             return (
                 <tr key={item.id}>
-                    <td>{item.name}</td>
-                    <td>{item.price.toFixed(2)} €</td>
+                    <td className={styles.nowrap}>{item.price.toFixed(2)} €</td>
                     <td>{item.quantity}</td>
+                    <td>{nameElem}</td>
                     <td>
-                        {item.href && <a href={item.href} target="_blank">Link</a>}
+                        <button className={`${styles.actionButton} fa fa-edit`}></button>
+
                     </td>
                     <td>
-                        <button className="btn btn-default" onClick={() => this._removeItem(item.id)}>Remove</button>
+                        <button className={`${styles.actionButton} fa fa-trash-o`} onClick={() => this._removeItem(item.id)}></button>
                     </td>
-                </tr>
+                </tr >
             )
         });
+
+        if (itemRows.length === 0) {
+            itemRows.push(
+                <tr key={0}>
+                    <td className={styles.emptyRow} colSpan={5}>Nada!</td>
+                </tr>
+            );
+        }
 
         let priceSum = 0;
         let quantitySum = 0;
@@ -54,52 +73,70 @@ export class List extends React.Component<OwnProps, OwnState> {
             priceSum += item.price * item.quantity;
         });
 
-        const withCurrencyExtra = priceSum * this.props.order.currencyMultiplier;
-        const currencyExtra = withCurrencyExtra - priceSum;
+        const cardButtons: CardButton[] = [{
+            icon: "plus-circle",
+            text: "Add item",
+            onClick: () => { }
+        }, {
+            icon: "edit",
+            text: "Edit list",
+            onClick: () => { }
+        }, {
+            icon: "trash-o",
+            text: "Remove list",
+            onClick: () => { }
+        }];
+
+        const usesCurrencyMultiplier = order.currencyMultiplier !== 1;
+        const shippingCost = 0;
+        const pricePlusCurrencyMultiplierExtra = priceSum * order.currencyMultiplier;
+        const currencyExtra = pricePlusCurrencyMultiplierExtra - priceSum;
+
+        const totalSum = pricePlusCurrencyMultiplierExtra + shippingCost;
 
         return (
-            <Card heading={list.name}>
+            <Card heading={list.name} buttons={cardButtons}>
                 <button className="btn btn-default" onClick={() => this.setState({ addingNew: true })}>Add item</button>
                 {this._getAddItemContainer()}
-                <div className="table-responsive">
+                <div className="table-responsive mt-3">
                     <table className="table">
                         <thead>
                             <tr>
-                                <th>Name</th>
                                 <th>Price</th>
-                                <th>Quantity</th>
-                                <th>Link</th>
-                                <th>Remove</th>
+                                <th>Qty.</th>
+                                <th>Name</th>
+                                <th>Edit</th>
+                                <th>Del.</th>
                             </tr>
                         </thead>
                         <tbody>
                             {itemRows}
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <td />
-                                <td>
-                                    <div>{currencyExtra.toFixed(2)} €</div>
-                                    <div>{withCurrencyExtra.toFixed(2)} €</div>
-                                </td>
-                                <td>{quantitySum}</td>
-                                <td />
-                                <td />
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
-            </Card>
+
+                <Summary>
+                    <SummaryItem label="Quantity sum" value={`${quantitySum} pieces`} />
+                    <SummaryItem label="Items cost sum" value={toPrice(priceSum)} />
+                    {usesCurrencyMultiplier && <SummaryItem label="Currency conversion extra" value={toPrice(currencyExtra)} />}
+                    <SummaryItem label="Shipping" value={toPrice(shippingCost)} />
+                    <SummaryItem label="Total sum" value={toPrice(totalSum)} big={true} />
+                </Summary>
+
+            </Card >
         )
 
     }
 
     private _getAddItemContainer() {
-        if (!this.state.addingNew) {
-            return null;
-        }
-
-        return <AddNewItemForm onSubmit={this._handleAddNewItemSubmit} />
+        return (
+            <AddNewItemForm
+                visible={this.state.addingNew}
+                onCloseRequest={() => this.setState({ addingNew: false })}
+                list={this.props.list}
+                onSubmit={this._handleAddNewItemSubmit}
+            />
+        )
     }
 
     private _handleAddNewItemSubmit(item: OrderItem) {

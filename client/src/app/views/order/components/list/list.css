@@ -1,0 +1,20 @@
+
+.itemTable {
+    & td, & th {
+        padding: .5rem !important;
+    }
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.actionButton {
+    background: transparent;
+    border: 0;
+}
+
+.emptyRow {
+    font-style: italic;
+    text-align: center;
+}

@@ -69,11 +69,17 @@ class OrderViewImpl extends React.Component<MergedProps, {}> {
 
         const lists = this.props.order.lists.map((list, index) => {
             return (
-                <Col key={index} lg={6} xl={6}>
-                    <List list={list} order={this.props.order} dispatch={this.props.dispatch} />
-                </Col>
+                <List key={index} list={list} order={this.props.order} dispatch={this.props.dispatch} />
             );
         });
+
+        const oddLists = lists.filter((list, index) => index % 2 === 1);
+        const evenLists = lists.filter((list, index) => index % 2 === 0);
+
+        const listCols = [
+            <Col key={0} lg={6} xl={6}>{evenLists}</Col>,
+            <Col key={1} lg={6} xl={6}>{oddLists}</Col>
+        ]
 
         return (
             <div>
@@ -87,7 +93,7 @@ class OrderViewImpl extends React.Component<MergedProps, {}> {
 
                 <Container className="mt-5">
                     <Row>
-                        {lists}
+                        {listCols}
                     </Row>
                 </Container>
 
