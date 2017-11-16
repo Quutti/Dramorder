@@ -5,8 +5,9 @@ const styles: any = require("./modal.css");
 
 export interface ModalButton {
     text: string;
-    onClick: (evt: React.MouseEvent<HTMLButtonElement>) => void;
+    onClick?: (evt: React.MouseEvent<HTMLButtonElement>) => void;
     primary?: boolean;
+    dismiss?: boolean;
     disabled?: boolean;
 }
 
@@ -68,7 +69,7 @@ export class Modal extends React.Component<OwnProps, OwnState> {
             })
 
             return (
-                <button key={index} disabled={btn.disabled} className={btnClasses} onClick={btn.onClick}>{btn.text}</button>
+                <button key={index} disabled={btn.disabled} className={btnClasses} onClick={(evt) => this._handleButtonClick(evt, btn)}>{btn.text}</button>
             )
         });
 
@@ -102,6 +103,16 @@ export class Modal extends React.Component<OwnProps, OwnState> {
 
     private _handleTransitionEnd() {
         this.setState({ closing: false });
+    }
+
+    private _handleButtonClick(evt: React.MouseEvent<HTMLButtonElement>, btn: ModalButton) {
+        if (btn.dismiss) {
+            this._close();
+        }
+
+        if (typeof btn.onClick === "function") {
+            btn.onClick(evt);
+        }
     }
 
 }
