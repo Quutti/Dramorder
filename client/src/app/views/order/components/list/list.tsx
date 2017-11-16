@@ -5,6 +5,8 @@ import { Card, CardButton } from "../../../../components/card";
 import { Summary, SummaryItem } from "../../../../components/summary";
 import { Modal } from "../../../../components/modal";
 import { RootState, Order, OrderList, OrderItem } from "../../../../types";
+
+import { EditListModal } from "../edit-list-modal";
 import { AddNewItemForm } from "../add-new-item-form";
 import { addItemActiveOrder, deleteItemActiveOrder } from "../../../../actions/active-order";
 
@@ -18,6 +20,7 @@ interface OwnProps {
 
 interface OwnState {
     addingNew: boolean;
+    editingList: boolean;
 }
 
 export class List extends React.Component<OwnProps, OwnState> {
@@ -25,7 +28,8 @@ export class List extends React.Component<OwnProps, OwnState> {
     constructor(props) {
         super(props);
         this.state = {
-            addingNew: false
+            addingNew: false,
+            editingList: false
         }
 
         this._handleAddNewItemSubmit = this._handleAddNewItemSubmit.bind(this);
@@ -76,15 +80,11 @@ export class List extends React.Component<OwnProps, OwnState> {
         const cardButtons: CardButton[] = [{
             icon: "plus-circle",
             text: "Add item",
-            onClick: () => { }
+            onClick: () => this.setState({ addingNew: true })
         }, {
             icon: "edit",
             text: "Edit list",
-            onClick: () => { }
-        }, {
-            icon: "trash-o",
-            text: "Remove list",
-            onClick: () => { }
+            onClick: () => this.setState({ editingList: true })
         }];
 
         const usesCurrencyMultiplier = order.currencyMultiplier !== 1;
@@ -96,8 +96,21 @@ export class List extends React.Component<OwnProps, OwnState> {
 
         return (
             <Card heading={list.name} buttons={cardButtons}>
-                <button className="btn btn-default" onClick={() => this.setState({ addingNew: true })}>Add item</button>
-                {this._getAddItemContainer()}
+
+                <AddNewItemForm
+                    visible={this.state.addingNew}
+                    onCloseRequest={() => this.setState({ addingNew: false })}
+                    list={this.props.list}
+                    onSubmit={this._handleAddNewItemSubmit}
+                />
+
+                <EditListModal
+                    active={this.state.editingList}
+                    list={list}
+                    onCloseRequest={() => this.setState({ editingList: false })}
+                    onSubmit={this._handleEditListSubmit}
+                />
+
                 <div className="table-responsive mt-3">
                     <table className="table">
                         <thead>
@@ -128,20 +141,13 @@ export class List extends React.Component<OwnProps, OwnState> {
 
     }
 
-    private _getAddItemContainer() {
-        return (
-            <AddNewItemForm
-                visible={this.state.addingNew}
-                onCloseRequest={() => this.setState({ addingNew: false })}
-                list={this.props.list}
-                onSubmit={this._handleAddNewItemSubmit}
-            />
-        )
-    }
-
     private _handleAddNewItemSubmit(item: OrderItem) {
         const { order, dispatch, list } = this.props;
         dispatch(addItemActiveOrder(order.id, list.id, item));
+    }
+
+    private _handleEditListSubmit(remove: boolean, newListName: string) {
+
     }
 
     private _removeItem(itemId: number) {

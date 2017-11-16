@@ -30,10 +30,13 @@
     background: transparent;
     border: 0;
     margin-left: 10px;
+    position: relative;
 }
 
 .footerButtonIcon {
+    position: relative;
     font-size: 1.2rem;
+    top: 2px;
 }
 
 .footerButtonText {

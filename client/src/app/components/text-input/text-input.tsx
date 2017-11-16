@@ -86,6 +86,10 @@ export class TextInput extends React.Component<OwnProps, OwnState> {
 
         const { value, name } = evt.target;
 
+        if (value === this.state.value) {
+            return;
+        }
+
         const errorText = (this.props.validator)
             ? this.props.validator(value)
             : "";
