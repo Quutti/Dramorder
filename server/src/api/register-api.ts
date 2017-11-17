@@ -5,7 +5,7 @@ import { authMiddleware } from "../auth";
 import { checkExistanceMiddleware } from "./middlewares";
 
 import { listOrders, addOrder, orderAuth, orderData, orderUpdate } from "./orders";
-import { listLists, addList, listData } from "./lists";
+import { listLists, addList, listData, deleteList } from "./lists";
 import { addItem, itemData, deleteItem } from "./items";
 
 type EndpointMethod = "post" | "get" | "put" | "delete";
@@ -63,6 +63,11 @@ export const registerApi = (app: Express) => {
         method: "get",
         middlewares: [checkExistanceMiddleware],
         handler: listData
+    }, {
+        url: "/api/orders/:orderId/lists/:listId",
+        method: "delete",
+        middlewares: [checkExistanceMiddleware],
+        handler: deleteList
     }];
 
     const itemEndpoints: Endpoint[] = [{

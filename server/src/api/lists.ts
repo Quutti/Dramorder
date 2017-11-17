@@ -63,6 +63,13 @@ export const listData: RequestHandler = (req, res: Response) => {
         .catch(err => helpers.handleError(err, res));
 }
 
+export const deleteList: RequestHandler = (req, res: Response) => {
+    const listId = parseInt(req.params.listId, 10);
+    DB.query("DELETE FROM lists WHERE id = ?", [listId])
+        .then(() => res.sendStatusJson(200))
+        .catch(err => helpers.handleError(err, res));
+}
+
 export const getOrderLists = (orderId: number): Promise<OrderList[]> => {
     const listsSql = `SELECT * FROM lists WHERE orderId = ?`;
 
