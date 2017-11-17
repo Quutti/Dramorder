@@ -6,18 +6,19 @@ import { Summary } from "../../../../components/summary";
 import { TextInput } from "../../../../components/text-input";
 import { Checkbox } from "../../../../components/checkbox";
 
-export type EditListModalSubmit = (deleted: boolean, newName: string) => void;
+export type EditListModalSubmit = (newName: string) => void;
 
 interface OwnProps {
     active: boolean;
     list: OrderList;
     onCloseRequest: () => void;
     onSubmit: EditListModalSubmit;
+    onRemoveRequest: () => void;
 }
 
 interface OwnState {
     active: boolean;
-    remove: boolean;
+    removeChecked: boolean;
     name: string;
 }
 
@@ -28,7 +29,7 @@ export class EditListModal extends React.Component<OwnProps, OwnState> {
 
         this.state = {
             active: false,
-            remove: false,
+            removeChecked: false,
             name: ""
         }
 
@@ -36,6 +37,7 @@ export class EditListModal extends React.Component<OwnProps, OwnState> {
         this._handleOnChange = this._handleOnChange.bind(this);
         this._handleCheckboxChange = this._handleCheckboxChange.bind(this);
         this._handleSaveButtonClick = this._handleSaveButtonClick.bind(this);
+        this._handleRemoveButtonClick = this._handleRemoveButtonClick.bind(this);
     }
 
     public render(): JSX.Element {
@@ -69,6 +71,8 @@ export class EditListModal extends React.Component<OwnProps, OwnState> {
                             onChange={this._handleCheckboxChange}
                             label="Remove this list (this action cannot be reverted!)" />
 
+                        {this.state.removeChecked && <button className="btn btn-primary" onClick={this._handleRemoveButtonClick}>Remove</button>}
+
                     </Summary>
                 </form>
             </Modal>
@@ -95,18 +99,22 @@ export class EditListModal extends React.Component<OwnProps, OwnState> {
     }
 
     private _handleCheckboxChange(value: boolean, name: string) {
-        this.setState({ remove: value });
+        this.setState({ removeChecked: value });
     }
 
     private _disableSaveButton(): boolean {
-        return !this.state.remove && !this.state.name;
+        return !this.state.name;
     }
 
     private _handleSaveButtonClick() {
-        const { remove, name } = this.state;
-        if (remove || name) {
-            this.props.onSubmit(remove, name);
+        const { name } = this.state;
+        if (name) {
+            this.props.onSubmit(name);
         }
+    }
+
+    private _handleRemoveButtonClick() {
+        this.props.onRemoveRequest();
     }
 
 }

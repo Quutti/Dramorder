@@ -8,7 +8,7 @@ import { RootState, Order, OrderList, OrderItem } from "../../../../types";
 
 import { EditListModal } from "../edit-list-modal";
 import { AddNewItemForm } from "../add-new-item-form";
-import { addItemActiveOrder, deleteItemActiveOrder } from "../../../../actions/active-order";
+import { addItemActiveOrder, deleteItemActiveOrder, deleteListActiveOrder } from "../../../../actions/active-order";
 
 const styles: any = require("./list.css");
 
@@ -108,6 +108,7 @@ export class List extends React.Component<OwnProps, OwnState> {
                     active={this.state.editingList}
                     list={list}
                     onCloseRequest={() => this.setState({ editingList: false })}
+                    onRemoveRequest={() => this._removeList()}
                     onSubmit={this._handleEditListSubmit}
                 />
 
@@ -146,13 +147,18 @@ export class List extends React.Component<OwnProps, OwnState> {
         dispatch(addItemActiveOrder(order.id, list.id, item));
     }
 
-    private _handleEditListSubmit(remove: boolean, newListName: string) {
+    private _handleEditListSubmit(newListName: string) {
 
     }
 
     private _removeItem(itemId: number) {
         const { order, dispatch, list } = this.props;
         dispatch(deleteItemActiveOrder(order.id, list.id, itemId));
+    }
+
+    private _removeList() {
+        const { dispatch, order, list } = this.props;
+        dispatch(deleteListActiveOrder(order.id, list.id));
     }
 
 }
