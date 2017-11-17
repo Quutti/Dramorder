@@ -62,6 +62,15 @@ export const deleteListActiveOrder = (orderId: number, listId: number) => {
     }
 }
 
+export const updateListActiveOrder = (orderId: number, listId: number, newName: string) => {
+    return (dispatch) => {
+        dispatch(fetchingActiveOrder());
+        axios.put(`api/orders/${orderId}/lists/${listId}`, { name: newName })
+            .then(res => dispatch(fetchActiveOrder(orderId)))
+            .catch(err => dispatch(failureActiveOrder(err)));
+    }
+}
+
 const fetchingActiveOrder = () => {
     return { type: ACTIVE_ORDER_FETCHING }
 }

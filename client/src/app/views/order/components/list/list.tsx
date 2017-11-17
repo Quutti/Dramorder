@@ -8,7 +8,7 @@ import { RootState, Order, OrderList, OrderItem } from "../../../../types";
 
 import { EditListModal } from "../edit-list-modal";
 import { AddNewItemForm } from "../add-new-item-form";
-import { addItemActiveOrder, deleteItemActiveOrder, deleteListActiveOrder } from "../../../../actions/active-order";
+import { addItemActiveOrder, deleteItemActiveOrder, deleteListActiveOrder, updateListActiveOrder } from "../../../../actions/active-order";
 
 const styles: any = require("./list.css");
 
@@ -33,6 +33,7 @@ export class List extends React.Component<OwnProps, OwnState> {
         }
 
         this._handleAddNewItemSubmit = this._handleAddNewItemSubmit.bind(this);
+        this._handleEditListSubmit = this._handleEditListSubmit.bind(this);
     }
 
     public render(): JSX.Element {
@@ -148,7 +149,8 @@ export class List extends React.Component<OwnProps, OwnState> {
     }
 
     private _handleEditListSubmit(newListName: string) {
-
+        const { order, dispatch, list } = this.props;
+        dispatch(updateListActiveOrder(order.id, list.id, newListName));
     }
 
     private _removeItem(itemId: number) {
