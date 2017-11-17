@@ -63,7 +63,22 @@ export const listData: RequestHandler = (req, res: Response) => {
         .catch(err => helpers.handleError(err, res));
 }
 
-export const deleteList: RequestHandler = (req, res: Response) => {
+export const listUpdate: RequestHandler = (req, res: Response) => {
+    const listId = parseInt(req.params.listId, 10);
+    let { name } = req.body;
+
+    if (typeof name !== "string") {
+        return res.sendStatusJson(400, { message: "Name should be a string", property: "name" });
+    }
+
+    const listUpdate: Partial<OrderList> = { name };
+
+    DB.query("UPDATE lists SET ? WHERE id = ?", [listUpdate, listId])
+        .then(() => res.sendStatusJson(200))
+        .catch(err => helpers.handleError(err, res));
+}
+
+export const listDelete: RequestHandler = (req, res: Response) => {
     const listId = parseInt(req.params.listId, 10);
     DB.query("DELETE FROM lists WHERE id = ?", [listId])
         .then(() => res.sendStatusJson(200))
